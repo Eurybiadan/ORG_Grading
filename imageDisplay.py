@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import csv
 import torch
 import numpy as np
 
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, filedialog
+
 
 ws= Tk()
 
-ws.title("PythonGuides")
-ws.geometry('400x300')
-ws['bg'] = '#ffbf00'
 
 # great example of embedding matlab plot into tkinter gui
 # https://www.geeksforgeeks.org/how-to-embed-matplotlib-charts-in-tkinter-gui/
@@ -23,36 +23,46 @@ ws['bg'] = '#ffbf00'
 #   - store user response in general based on what the graph looks like
 
 def printValue():
-    pname = player_name.get()
-    Label(ws, text=f'{pname}, Registered!', pady=20, bg='#ffbf00').pack()
+
+    #path = "C:\\Users\\grohd\\Downloads\\(-1,-0.2)\\00-33388_20210924_OS_(-1,-0.2)_1x1_789_760nm1_extract_reg_cropped_piped_profiles.csv"
+
+    #
+    pName = filedialog.askopenfilename(title="Select the folder containing all data of interest.")
+
+    numpy_data = np.loadtxt(pName, dtype=np.float, delimiter=",", skiprows=1)
+
+    plot = Figure(figsize = (5,5), dpi=100)
+    plotGraph = plot.add_subplot(111)
+
+    plotGraph.plot((numpy_data[:,1]))
+
+    canvas = FigureCanvasTkAgg(plot, master=ws)
+    canvas.draw()
+
+    canvas.get_tk_widget().pack()
+    toolbar = NavigationToolbar2Tk(canvas, ws)
+    toolbar.update()
+    canvas.get_tk_widget().pack()
 
 
-player_name = Entry(ws)
-player_name.pack(pady=30)
+ws.title('Hello')
+ws.geometry("500x500")
 
-Button(
-    ws,
-    text="Register Player",
-    padx=10,
-    pady=5,
-    command=printValue
-    ).pack()
+plot_button = Button(master = ws,
+                     command = printValue,
+                     height = 2,
+                     width = 10,
+                     text = "Get directory")
+
+plot_button.pack()
 
 ws.mainloop()
-
-path = "C:\\Users\\grohd\\Downloads\\(-1,-0.2)\\00-33388_20210924_OS_(-1,-0.2)_1x1_789_760nm1_extract_reg_cropped_piped_profiles.csv"
-
-numpy_data = np.loadtxt(path, dtype= np.float, delimiter=",", skiprows=1)
-
-# converting data to
-# print(data.shape) # making sure i have all the data
-print((numpy_data))
 
 
 # this is useful: https://stackoverflow.com/questions/2659312/how-do-i-convert-a-numpy-array-to-and-display-an-image
 
-for i in range(6): #numpy_data:
-   plt.plot(numpy_data[:,i])
-   plt.title(i)
-   plt.show()
+#for i in range(6): #numpy_data:
+#   plt.plot(numpy_data[:,i])
+#   plt.title(i)
+#   plt.show()
 
