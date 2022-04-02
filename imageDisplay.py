@@ -4,6 +4,7 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import csv
 import torch
 import numpy as np
+import os
 
 from tkinter import *
 from tkinter import ttk, filedialog
@@ -20,7 +21,7 @@ def keyPress(event):
     key = event.char
     print(key, 'is pressed')
 
-    with open('csvfile.csv', 'a') as file:
+    with open(outputNum+'_output_values.csv', 'a') as file:
         file.write(key)
         file.write(',\n')
 
@@ -37,7 +38,21 @@ def printValue():
     plot = Figure(figsize = (5,5), dpi=100)
     plotGraph = plot.add_subplot(111)
 
-    plotGraph.plot((numpy_data[25,:]))
+    seqNum = pName
+    (head, seqNum) = os.path.split(seqNum)
+    parseTemp = seqNum.split(("_"))
+    global outputNum
+    outputNum = parseTemp[5]
+
+    num_rows, num_cols = numpy_data.shape
+
+    i = 0
+    while i <= num_rows:
+        print(i)
+        i = i + 1
+        plotGraph.plot((numpy_data[i, :]))
+    ws.bind('<Key>', keyPress)
+
 
     canvas = FigureCanvasTkAgg(plot, master=ws)
     canvas.draw()
@@ -47,7 +62,6 @@ def printValue():
     toolbar.update()
     canvas.get_tk_widget().pack()
 
-ws.bind('<Key>', keyPress)
 
 ws.title('Hello')
 ws.geometry("500x500")
@@ -68,3 +82,4 @@ ws.mainloop()
 # https://stackoverflow.com/questions/11295917/how-to-select-a-directory-and-store-the-location-using-tkinter-in-python
 # https://www.geeksforgeeks.org/how-to-embed-matplotlib-charts-in-tkinter-gui/
 # https://stackoverflow.com/questions/58186325/tkinter-not-waiting-for-user-input-inside-functions
+# https://www.geeksforgeeks.org/python-binding-function-in-tkinter/
